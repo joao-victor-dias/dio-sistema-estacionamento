@@ -1,87 +1,87 @@
-interface IVeiculo{
-    modelo: string;
-    placa: string;
-    entrada: Date | string;
+interface IVehicle{
+    model: string;
+    plate: string;
+    entrace: Date | string;
 }
 
 (function () {
     const element = (query: string): HTMLInputElement | null => 
         document.querySelector(query);
 
-    function calcTempo(mil: number){
+    function calcTime(mil: number){
         const min = Math.floor(mil / 60000);
         const sec = Math.floor((mil % 60000) / 1000);
 
         return `${min}m e ${sec}s`;
     }
 
-    function patio(){
-        function ler():IVeiculo[]{
-            return localStorage.patio ? JSON.parse(localStorage.patio) : [];
+    function yard(){
+        function read():IVehicle[]{
+            return localStorage.yard ? JSON.parse(localStorage.yard) : [];
         }
 
-        function salvar(veiculos: IVeiculo[]){
-            localStorage.setItem("patio", JSON.stringify(veiculos));
+        function insert(vehicles: IVehicle[]){
+            localStorage.setItem("yard", JSON.stringify(vehicles));
         }
 
-        function adicionar(veiculo: IVeiculo, salva?: Boolean){
+        function add(vehicle: IVehicle, save?: Boolean){
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${veiculo.modelo}</td>
-                <td>${veiculo.placa}</td>
-                <td>${veiculo.entrada}</td>
+                <td>${vehicle.model}</td>
+                <td>${vehicle.plate}</td>
+                <td>${vehicle.entrace}</td>
                 <td>
-                    <button class="delete" data-placa="${veiculo.placa}">X</button> 
+                    <button class="remove" data-plate="${vehicle.plate}">X</button> 
                 </td>
             `;
 
-            row.querySelector(".delete")?.addEventListener("click", function(){
-                remover(this.dataset.placa);
+            row.querySelector(".remove")?.addEventListener("click", function(){
+                remove(this.dataset.plate);
             })
     
-            element("#patio")?.appendChild(row); 
+            element("#yard")?.appendChild(row); 
             
-            if (salva) salvar([...ler(), veiculo]);
+            if (save) insert([...read(), vehicle]);
         }
     
-        function remover(placa: string){
-            const {entrada, modelo} = ler().find(veiculo => veiculo.placa === placa);
-            const tempo = calcTempo(new Date().getTime() - new Date(entrada).getTime());
+        function remove(plate: string){
+            const {entrace, model} = read().find(vehicle => vehicle.plate === plate);
+            const time = calcTime(new Date().getTime() - new Date(entrace).getTime());
 
             if (
-                !confirm(`O veículo ${modelo} permaneceu por ${tempo}. Deseja encerrar?`)
+                !confirm(`O veículo ${model} permaneceu por ${time}. Deseja encerrar?`)
             )
                 return;
             
-            salvar(ler().filter((veiculo) => veiculo.placa !== placa));
+            insert(read().filter((vehicle) => vehicle.plate !== plate));
             render();
         }
         
         function render(){
-            element ("#patio")!.innerHTML = "";
-            const patio = ler();
+            element ("#yard")!.innerHTML = "";
+            const yard = read();
 
-            if(patio.length){
-                patio.forEach(veiculo => adicionar(veiculo));
+            if(yard.length){
+                yard.forEach(vehicle => add(vehicle));
             }
         }
     
-        return {ler, adicionar, remover, salvar, render}
+        return {read, add, remove, insert, render}
     }
 
-    patio().render();
+    yard().render();
 
-    element('#cadastro')?.addEventListener("click", () => {
-        const modelo = element("#modelo")?.value;
-        const placa = element("#placa")?.value;
+    element('#register')?.addEventListener("click", () => {
+        const model = element("#model")?.value.toUpperCase();
+        const plate = element("#plate")?.value.toUpperCase();
 
-        if(!modelo || !placa){
+        if(!model || !plate){
             alert("Os campos modelo e placa são obrigatórios");
             return;
         }
 
-        console.log(modelo,placa)
+        console.log(model,plate)
 
-       patio().adicionar({modelo, placa, entrada: new Date().toISOString() }, true); 
+       yard().add({model, plate, entrace: new Date().toISOString().toUpperCase() }, true); 
     });
 })();
