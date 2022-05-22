@@ -26,4 +26,4 @@ Projeto desenvolvido durante bootcamp na plataforma Digital Innovation One. Trat
 
 ### Interface
 
-![](./img/tela.png)
+![](./assets/img/tela.png)
